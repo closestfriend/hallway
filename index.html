@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>street cloud study</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --fg: #b9b9b4;
+        --fg-dim: #6d6d68;
+        --panel-bg: rgba(12, 12, 12, 0.82);
+        --line: rgba(255, 255, 255, 0.08);
+        --accent: #c8c8be;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; overflow: hidden; background: #050505; }
+      body {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        font-size: 11px;
+        color: var(--fg);
+      }
+      #app { position: fixed; inset: 0; }
+      #app canvas { display: block; }
+
+      /* status line, bottom-left: loading / fixture notice */
+      #status {
+        position: fixed;
+        left: 14px;
+        bottom: 12px;
+        max-width: 46ch;
+        line-height: 1.5;
+        color: var(--fg-dim);
+        pointer-events: none;
+        white-space: pre-line;
+        text-shadow: 0 1px 2px rgba(0,0,0,.8);
+      }
+      #status .warn { color: #a89a6a; }
+
+      /* diagnostic control panel, top-right */
+      #panel {
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        width: 248px;
+        background: var(--panel-bg);
+        border: 1px solid var(--line);
+        backdrop-filter: blur(6px);
+        user-select: none;
+      }
+      #panel header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 8px 10px;
+        cursor: pointer;
+        border-bottom: 1px solid var(--line);
+        letter-spacing: 0.08em;
+      }
+      #panel header .stats { color: var(--fg-dim); font-size: 10px; }
+      #panel.collapsed .body { display: none; }
+      #panel.collapsed header { border-bottom: none; }
+      #panel .body { padding: 6px 10px 10px; max-height: calc(100vh - 80px); overflow-y: auto; }
+      #panel .group { margin-top: 8px; }
+      #panel .group > .title {
+        color: var(--fg-dim);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-size: 9px;
+        margin-bottom: 4px;
+      }
+      #panel .row {
+        display: grid;
+        grid-template-columns: 92px 1fr 34px;
+        gap: 6px;
+        align-items: center;
+        margin: 3px 0;
+      }
+      #panel .row label { color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      #panel .row .val { color: var(--fg-dim); text-align: right; font-variant-numeric: tabular-nums; }
+      #panel input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 14px;
+        background: transparent;
+      }
+      #panel input[type="range"]::-webkit-slider-runnable-track {
+        height: 2px; background: rgba(255,255,255,.18);
+      }
+      #panel input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 9px; height: 9px; margin-top: -3.5px;
+        background: var(--accent); border-radius: 0;
+      }
+      #panel input[type="range"]::-moz-range-track { height: 2px; background: rgba(255,255,255,.18); }
+      #panel input[type="range"]::-moz-range-thumb {
+        width: 9px; height: 9px; background: var(--accent); border: none; border-radius: 0;
+      }
+      #panel .seg { display: flex; gap: 4px; margin: 3px 0; }
+      #panel .seg button {
+        flex: 1;
+        background: transparent;
+        border: 1px solid var(--line);
+        color: var(--fg-dim);
+        font: inherit;
+        padding: 4px 0;
+        cursor: pointer;
+      }
+      #panel .seg button.on { color: var(--accent); border-color: rgba(255,255,255,.3); }
+      #hint {
+        position: fixed;
+        left: 14px;
+        top: 12px;
+        color: var(--fg-dim);
+        line-height: 1.6;
+        pointer-events: none;
+        text-shadow: 0 1px 2px rgba(0,0,0,.8);
+        transition: opacity 2s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hint">drag orbit &nbsp;·&nbsp; scroll dolly &nbsp;·&nbsp; right-drag / shift-drag pan</div>
+    <div id="status"></div>
+    <div id="panel" class="collapsed"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
