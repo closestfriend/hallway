@@ -1,0 +1,20 @@
+{
+  "name": "street-cloud-study",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Experimental WebGL artwork: photographic reality reconstructed imperfectly as spatial data",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.170.0",
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0"
+  }
+}
