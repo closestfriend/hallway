@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { CONFIG } from './config';
 import type { SpatialDataSource } from '../data/SpatialDataSource';
 import { PlyDataSource } from '../data/PlyDataSource';
+import { OpenTopographyDataSource } from '../data/OpenTopographyDataSource';
 import { FixtureDataSource } from '../data/FixtureDataSource';
 import type { SpatialScene } from '../data/SpatialScene';
 import { PointCloudRenderer } from '../rendering/PointCloudRenderer';
@@ -71,7 +72,8 @@ export class App {
   async start(): Promise<void> {
     this.animate(); // render loop runs while data loads
 
-    // Data source selection: real PLY first, dev fixture as fallback.
+    // Data source selection: real PLY first, then (if configured) a real
+    // but aerial OpenTopography DEM, dev fixture as last-resort fallback.
     // Additional SpatialDataSource implementations slot in here.
     let scene: SpatialScene | null = null;
     try {
@@ -81,13 +83,37 @@ export class App {
       this.setStatus('');
     } catch {
       this.source?.dispose();
-      this.setStatus('no capture at /assets/scene.ply — simulating a panorama scan …');
-      this.source = new FixtureDataSource();
-      scene = await this.source.load((f) => this.setStatus(`simulating panorama scan … ${(f * 100) | 0}%`));
-      this.setStatus(
-        'DEV FIXTURE — simulated panorama scan, not a real capture.\nDrop a colored PLY at public/assets/scene.ply (see assets/README.md).',
-        true,
-      );
+      this.source = null;
+
+      if (OpenTopographyDataSource.isConfigured()) {
+        try {
+          const { demType, bbox, maxPoints } = CONFIG.openTopography;
+          this.setStatus(`no capture at ${CONFIG.assetUrl} — fetching OpenTopography ${demType} DEM …`);
+          this.source = new OpenTopographyDataSource(bbox, demType, import.meta.env.VITE_OPENTOPOGRAPHY_API_KEY!, maxPoints);
+          scene = await this.source.load((f) => this.setStatus(`fetching DEM … ${(f * 100) | 0}%`));
+          this.setStatus(
+            'REAL DATA, NOT PHOTOGRAPHIC — an OpenTopography aerial elevation model ' +
+              `(${demType}), colored by height rather than by camera.\n` +
+              'Drop a colored PLY at public/assets/scene.ply for the intended street-level capture.',
+            true,
+          );
+        } catch (err) {
+          console.warn('OpenTopography source failed, falling back to the dev fixture:', err);
+          this.source?.dispose();
+          this.source = null;
+          scene = null;
+        }
+      }
+
+      if (!scene) {
+        this.setStatus(`no capture at ${CONFIG.assetUrl} — simulating a panorama scan …`);
+        this.source = new FixtureDataSource();
+        scene = await this.source.load((f) => this.setStatus(`simulating panorama scan … ${(f * 100) | 0}%`));
+        this.setStatus(
+          'DEV FIXTURE — simulated panorama scan, not a real capture.\nDrop a colored PLY at public/assets/scene.ply (see assets/README.md).',
+          true,
+        );
+      }
     }
     if (this.disposed || !scene) return;
 

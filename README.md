@@ -29,6 +29,19 @@ Drop a real colored point cloud at **`public/assets/scene.ply`** and reload.
 The supported PLY layout (and ideas for legally usable captures) is
 documented in [`public/assets/README.md`](public/assets/README.md).
 
+### Optional: real (but aerial) data with zero manual downloads
+
+If no PLY is present, and a free
+[OpenTopography](https://opentopography.org/) API key is set as
+`VITE_OPENTOPOGRAPHY_API_KEY` (copy `.env.example` to `.env`), the app fetches
+a real elevation raster over San Francisco from OpenTopography's public
+Global DEM API and renders it as a height-colored point cloud instead of the
+dev fixture. This is genuinely real, freely-licensed, API-fetched data — but
+it's an aerial surface model colored by elevation, not a photographic
+street-level capture, so it is clearly labeled on screen (`REAL DATA, NOT
+PHOTOGRAPHIC`) and is a fallback, not the intended artistic result. See
+`src/data/OpenTopographyDataSource.ts`.
+
 ## Controls
 
 - **drag** orbit · **scroll** dolly · **right-drag / shift-drag** pan
@@ -59,8 +72,10 @@ Design rules the code follows:
 
 - **Sources are pluggable.** Anything that can produce a `SpatialScene`
   (positions, colors, optional confidence / view ids / scan origins, bounds)
-  can be rendered. Gaussian splats, RGB-D, LAS/LAZ, panorama+depth are
-  intended future implementations of `SpatialDataSource`.
+  can be rendered. `PlyDataSource` (real captures) and
+  `OpenTopographyDataSource` (real, freely-licensed, API-fetched aerial DEM
+  data — see above) both exist today; Gaussian splats, RGB-D, LAS/LAZ, and
+  panorama+depth reprojection are intended future implementations.
 - **Artifacts are non-destructive.** Point buffers are uploaded once; every
   artifact (rings, missing cells, wedges, depth bands, layer drift, reveal,
   decay) is a uniform-driven transform in the vertex shader, anchored to the
