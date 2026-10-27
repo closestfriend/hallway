@@ -2,7 +2,7 @@
 
 An experimental WebGL artwork: a real place, reconstructed imperfectly as
 spatial data. Inspired by the visual language of
-[Street Cloud](https://experiments.withgoogle.com/street-cloud) — panorama +
+[Street Cloud](https://experiments.withgoogle.com/street-cloud): panorama +
 LiDAR captures rendered as colored point clouds whose *errors* (scan rings,
 holes, misaligned layers, depth bands) are the aesthetic.
 
@@ -23,7 +23,7 @@ then open the printed URL. Production build: `npm run build` (output in
 
 Out of the box the app renders a **dev fixture**: a simulated panorama scan
 of a synthetic street, generated in a worker. It exists only to verify the
-renderer and is clearly labeled on screen — it is not the artistic result.
+renderer and is clearly labeled on screen: it is not the artistic result.
 
 Drop a real colored point cloud at **`public/assets/scene.ply`** and reload.
 The supported PLY layout (and ideas for legally usable captures) is
@@ -33,14 +33,14 @@ documented in [`public/assets/README.md`](public/assets/README.md).
 
 - **drag** orbit · **scroll** dolly · **right-drag / shift-drag** pan
 - top-right panel (click `RECONSTRUCTION` to expand):
-  - **camera** — `guided` (slow authored loop) / `explore` (damped orbit + drift), travel speed
-  - **points** — size, density, opacity, saturation
-  - **artifacts** — a macro `intensity` knob plus individual controls for
+  - **camera**: `guided` (slow authored loop) / `explore` (damped orbit + drift), travel speed
+  - **points**: size, density, opacity, saturation
+  - **artifacts**: a macro `intensity` knob plus individual controls for
     scan rings, ring spacing, structured missing data, panorama wedges,
     depth quantization bands, source-layer separation, jitter
-  - **time** — temporal reveal (scene streams in) and decay (seen regions
+  - **time**: temporal reveal (scene streams in) and decay (seen regions
     thin out again); both cyclic and non-destructive
-  - **atmosphere** — depth fade, background level
+  - **atmosphere**: depth fade, background level
 
 ## Architecture
 
